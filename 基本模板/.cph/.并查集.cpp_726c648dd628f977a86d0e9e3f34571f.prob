@@ -1,0 +1,1 @@
+{"name":"Local: 并查集","url":"c:\\Users\\User\\Desktop\\cpp\\并查集.cpp","tests":[{"id":1780545900785,"input":"4 5\nM 1 2\nM 3 4\nQ 1 2\nQ 1 3\nQ 3 4","output":""}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"c:\\Users\\User\\Desktop\\cpp\\并查集.cpp","group":"local","local":true}
