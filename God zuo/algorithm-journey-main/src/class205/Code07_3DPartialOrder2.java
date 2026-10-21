@@ -1,0 +1,198 @@
+package class205;
+
+// 三维偏序，C++版
+// 本题就是讲解170，题目1，讲了CDQ分治的解法，这里用kdt的解法
+// 一共有n个对象，每个对象有a、b、c三个属性，每个属性值的范围都是[1, k]
+// f(i)表示，aj <= ai 且 bj <= bi 且 cj <= ci 且 j != i 的j的数量
+// ans(d)表示，f(i) == d 的i的数量
+// 打印所有的ans[d]，d的范围[0, n)
+// 1 <= n <= 10^5
+// 1 <= k <= 2 * 10^5
+// 测试链接 : https://www.luogu.com.cn/problem/P3810
+// 如下实现是C++的版本，C++版本和java版本逻辑完全一样
+// 提交如下代码，可以通过所有测试用例
+
+//#include <bits/stdc++.h>
+//
+//using namespace std;
+//
+//struct ABC {
+//    int a, b, c;
+//};
+//
+//bool ACmp(ABC x, ABC y) {
+//    return x.a < y.a;
+//}
+//
+//const int MAXN = 100001;
+//const int INF = 1 << 30;
+//int n, k;
+//
+//ABC abc[MAXN];
+//int b[MAXN];
+//int c[MAXN];
+//int cntkdt;
+//int root;
+//int siz[MAXN];
+//int ls[MAXN];
+//int rs[MAXN];
+//int bmin[MAXN];
+//int bmax[MAXN];
+//int cmin[MAXN];
+//int cmax[MAXN];
+//
+//double ALPHA = 0.7;
+//int top;
+//int topFather;
+//int topSide;
+//int topDimension;
+//int arr[MAXN];
+//int treeSiz;
+//
+//int ans[MAXN];
+//
+//int init(int qb, int qc) {
+//    cntkdt++;
+//    b[cntkdt] = qb;
+//    c[cntkdt] = qc;
+//    ls[cntkdt] = rs[cntkdt] = 0;
+//    siz[cntkdt] = 1;
+//    bmin[cntkdt] = bmax[cntkdt] = qb;
+//    cmin[cntkdt] = cmax[cntkdt] = qc;
+//    return cntkdt;
+//}
+//
+//void maintain(int i) {
+//    siz[i] = siz[ls[i]] + siz[rs[i]] + 1;
+//    bmin[i] = min(b[i], min(bmin[ls[i]], bmin[rs[i]]));
+//    bmax[i] = max(b[i], max(bmax[ls[i]], bmax[rs[i]]));
+//    cmin[i] = min(c[i], min(cmin[ls[i]], cmin[rs[i]]));
+//    cmax[i] = max(c[i], max(cmax[ls[i]], cmax[rs[i]]));
+//}
+//
+//int compareNode(int i, int j, int dimension) {
+//    int v1 = dimension == 0 ? b[i] : c[i];
+//    int v2 = dimension == 0 ? b[j] : c[j];
+//    return v1 == v2 ? 0 : v1 < v2 ? -1 : 1;
+//}
+//
+//struct Cmp {
+//    int dimension;
+//
+//    bool operator()(int i, int j) const {
+//        return compareNode(i, j, dimension) < 0;
+//    }
+//};
+//
+//int build(int l, int r, int dimension) {
+//    if (l > r) {
+//        return 0;
+//    }
+//    int mid = (l + r) >> 1;
+//    nth_element(arr + l, arr + mid, arr + r + 1, Cmp{dimension});
+//    int rt = arr[mid];
+//    ls[rt] = build(l, mid - 1, dimension ^ 1);
+//    rs[rt] = build(mid + 1, r, dimension ^ 1);
+//    maintain(rt);
+//    return rt;
+//}
+//
+//bool balance(int i) {
+//    return ALPHA * siz[i] >= max(siz[ls[i]], siz[rs[i]]);
+//}
+//
+//void dfs(int i) {
+//    if (i != 0) {
+//        arr[++treeSiz] = i;
+//        dfs(ls[i]);
+//        dfs(rs[i]);
+//    }
+//}
+//
+//void rebuild() {
+//    if (top != 0) {
+//        treeSiz = 0;
+//        dfs(top);
+//        int newRoot = build(1, treeSiz, topDimension);
+//        if (topFather == 0) {
+//            root = newRoot;
+//        } else if (topSide == 1) {
+//            ls[topFather] = newRoot;
+//        } else {
+//            rs[topFather] = newRoot;
+//        }
+//    }
+//}
+//
+//int add(int insertNode, int u, int fa, int side, int dimension) {
+//    if (u == 0) {
+//        return insertNode;
+//    }
+//    if (compareNode(insertNode, u, dimension) <= 0) {
+//        ls[u] = add(insertNode, ls[u], u, 1, dimension ^ 1);
+//    } else {
+//        rs[u] = add(insertNode, rs[u], u, 2, dimension ^ 1);
+//    }
+//    maintain(u);
+//    if (!balance(u)) {
+//        top = u;
+//        topFather = fa;
+//        topSide = side;
+//        topDimension = dimension;
+//    }
+//    return u;
+//}
+//
+//void add(int qx, int qy) {
+//    top = topFather = topSide = topDimension = 0;
+//    int insertNode = init(qx, qy);
+//    root = add(insertNode, root, 0, 0, 0);
+//    rebuild();
+//}
+//
+//int query(int qb, int qc, int i) {
+//    if (i == 0) {
+//        return 0;
+//    }
+//    if (bmin[i] > qb || cmin[i] > qc) {
+//        return 0;
+//    }
+//    if (bmax[i] <= qb && cmax[i] <= qc) {
+//        return siz[i];
+//    }
+//    int ans = 0;
+//    if (b[i] <= qb && c[i] <= qc) {
+//        ans++;
+//    }
+//    ans += query(qb, qc, ls[i]);
+//    ans += query(qb, qc, rs[i]);
+//    return ans;
+//}
+//
+//int main() {
+//    ios::sync_with_stdio(false);
+//    cin.tie(nullptr);
+//    cin >> n >> k;
+//    for (int i = 1; i <= n; i++) {
+//        cin >> abc[i].a >> abc[i].b >> abc[i].c;
+//    }
+//    sort(abc + 1, abc + n + 1, ACmp);
+//    bmin[0] = cmin[0] = INF;
+//    bmax[0] = cmax[0] = -INF;
+//    for (int l = 1, r = 1; l <= n; l = ++r) {
+//        while (r + 1 <= n && abc[r + 1].a == abc[l].a) {
+//            r++;
+//        }
+//        for (int i = l; i <= r; i++) {
+//            add(abc[i].b, abc[i].c);
+//        }
+//        for (int i = l; i <= r; i++) {
+//            int fi = query(abc[i].b, abc[i].c, root) - 1;
+//            ans[fi]++;
+//        }
+//    }
+//    for (int d = 0; d < n; d++) {
+//        cout << ans[d] << "\n";
+//    }
+//    return 0;
+//}
